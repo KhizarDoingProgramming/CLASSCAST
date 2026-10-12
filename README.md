@@ -165,3 +165,8 @@ npx tsc --noEmit --project web/tsconfig.json
 ## 📜 License
 
 MIT License. Built for seamless offline education everywhere. Give it a star ⭐ if it saved your classroom presentation!
+
+---
+
+Crafted with 💙 by [MUSTAFA](https://mustaffa.vercel.app)
+
