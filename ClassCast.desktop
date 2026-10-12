@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=ClassCast
+Comment=Start ClassCast Server and UI
+Exec=bash -c 'DIR="$(dirname "%k")"; cd "$DIR" && ./Start_ClassCast.sh'
+Icon=utilities-terminal
+Terminal=true
+Type=Application
+Categories=Education;

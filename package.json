@@ -1,0 +1,55 @@
+{
+  "name": "classcast",
+  "version": "0.1.0",
+  "private": true,
+  "main": "electron/main.js",
+  "description": "Offline-first classroom collaboration and screen-sharing platform",
+  "workspaces": [
+    "packages/shared",
+    "server",
+    "web"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:web\"",
+    "dev:server": "npm run dev --workspace=server",
+    "dev:web": "npm run dev --workspace=web",
+    "build": "npm run build --workspace=packages/shared && npm run build --workspace=server && npm run build --workspace=web",
+    "build:server": "npm run build --workspace=server",
+    "build:web": "npm run build --workspace=web",
+    "start": "npm run start --workspace=server",
+    "start:prod": "npm run build && npm run start",
+    "test": "npm run test --workspaces --if-present",
+    "desktop:dev": "npm run build && electron . --no-sandbox",
+    "desktop:build": "npm run build && electron-builder build --linux"
+  },
+  "build": {
+    "appId": "com.classcast.app",
+    "productName": "ClassCast",
+    "directories": {
+      "output": "dist-desktop"
+    },
+    "files": [
+      "electron/**/*",
+      "server/dist/**/*",
+      "server/package.json",
+      "web/dist/**/*",
+      "packages/shared/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.js"
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "electron": "^44.4.3",
+    "electron-builder": "^26.15.3",
+    "typescript": "^5.7.0"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "qrcode": "^1.5.4",
+    "ws": "^8.21.3"
+  }
+}
