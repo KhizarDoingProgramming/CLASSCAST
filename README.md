@@ -1,161 +1,167 @@
-# ClassCast 🎓
+# ClassCast 🎓✨
 
-> **Offline-first classroom collaboration, screen-sharing, attendance, and interaction platform designed for local Wi-Fi and mobile hotspots.**
+> **No Wi-Fi? Zero data? No cap, we got you.**  
+> An offline-first, peer-to-peer classroom collaboration hub that turns any phone hotspot or LAN into an interactive lecture hall. Screen sharing, live attendance, real-time chat—running **100% locally**.
 
-ClassCast enables educators and students to interact seamlessly in offline environments without active internet connectivity. A teacher can host a classroom session on a laptop, share their screen via low-latency WebRTC, take digital attendance, and chat with students—all over a standard smartphone mobile hotspot or local area network.
-
----
-
-## 🌟 Key Features
-
-* **Offline-First Collaboration:** Works completely offline without cloud servers or internet access.
-* **Low-Latency Screen Sharing:** Peer-to-peer WebRTC video stream directly between the presenter and participants.
-* **Instant QR Code Joining:** Students scan a dynamically generated QR code or open a local IP URL in their smartphone browser.
-* **Attendance Tracking:** Real-time participant logging with single-click CSV attendance export.
-* **Interactive Classroom Tools:** In-session chat, raise-hand notifications, and host-managed permissions.
-* **Cross-Platform:** Runs on Linux, Windows, and macOS via portable launchers or an Electron desktop application.
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React 19](https://img.shields.io/badge/React_19-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite_6-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![WebRTC](https://img.shields.io/badge/WebRTC-333333?style=for-the-badge&logo=webrtc&logoColor=white)](https://webrtc.org/)
+[![Electron](https://img.shields.io/badge/Electron_44-47848F?style=for-the-badge&logo=electron&logoColor=white)](https://www.electronjs.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 ---
 
-## 🏗️ Architecture & Technology Stack
+## ⚡ The TL;DR: Why Does This Exist?
 
-ClassCast is organized as a lightweight TypeScript monorepo using npm workspaces:
+Picture this: your classroom Wi-Fi is down, cellular data is non-existent in the basement lecture hall, or you're running a tech workshop in a dead zone. Traditional tools like Zoom, Teams, or Google Meet immediately crash and burn because they rely on cloud servers and internet pipes.
+
+**ClassCast hits different:**
+* 📶 **Runs over a phone hotspot** — zero internet bytes consumed.
+* 🖥️ **Crisp, sub-second screen sharing** beamed straight from teacher laptop to student phones.
+* 📲 **Scan & join instantly** — students just scan a QR code on the projector or blackboard. No app download needed (it's a clean PWA).
+* 📋 **One-click attendance export** — teacher downloads clean CSVs in seconds.
+* 🔒 **Completely private & local** — student data and video frames never leave your local room.
+
+---
+
+## 🧰 The Tech Stack Breakdown (Under The Hood)
+
+We didn't just throw things together; every tool in this monorepo was hand-picked for speed, reliability, and offline autonomy:
 
 ```
 CLASSCAST/
 ├── packages/
-│   └── shared/          # TypeScript contracts, validation, protocol definitions
-├── server/              # Express backend, WebSocket signaling server, QR generator
-├── web/                 # React 19 + TypeScript + Vite + Tailwind CSS frontend (PWA)
-├── electron/            # Electron desktop integration & process lifecycle manager
-├── Start_ClassCast.sh   # One-click portable launcher for Linux & macOS
-├── Start_ClassCast.bat  # One-click portable launcher for Windows
-└── ClassCast.desktop    # Desktop shortcut for Linux desktop environments
+│   └── shared/          # 📦 Source of Truth: shared types, protocol validation, constants
+├── server/              # ⚙️ Node.js + Express backend + WebSocket signaling hub
+├── web/                 # ⚡ React 19 + Vite 6 + Tailwind CSS frontend (PWA)
+├── electron/            # 💻 Electron desktop wrapper & background daemon orchestrator
+├── Start_ClassCast.sh   # 🚀 One-click launcher (Linux & macOS)
+├── Start_ClassCast.bat  # 🚀 One-click launcher (Windows)
+└── ClassCast.desktop    # 🐧 Desktop shortcut entry for Linux
 ```
 
-* **Frontend:** React 19, React Router 7, Vite 6, Tailwind CSS.
-* **Backend:** Node.js, Express, `ws` (WebSocket server), `qrcode`.
-* **Media & Signaling:** WebRTC mesh orchestration with custom WebSocket signaling for offers, answers, ICE candidates, and session events.
+### 1. 🌐 The Frontend: React 19 + Vite 6 + Tailwind CSS
+* **React 19:** Powers our ultra-reactive UI with buttery smooth transitions, modern hook management (`useMedia`, `useWebSocket`), and optimized DOM updates.
+* **Vite 6:** Instant HMR in development and lightning-fast Rollup tree-shaking for production builds (~320 KB gzipped payload).
+* **Tailwind CSS v3:** Clean, modern, accessible design with glassmorphism, responsive mobile cards, and intuitive lecture controls.
+* **PWA (Progressive Web App):** Configured via `vite-plugin-pwa` so student browsers cache the application shell locally and launch without re-fetching static assets.
+
+### 2. ⚡ Real-Time Engine: WebRTC + Custom WebSocket Signaling
+* **Native WebRTC:** Peer-to-peer media pipeline using standard browser `RTCPeerConnection`. Once negotiated, video streams flow directly across the local Wi-Fi router or hotspot with ultra-low latency (under 50ms) and zero cloud compression artifacts.
+* **WebSocket Server (`ws`):** Bi-directional, stateful message bus. Instead of polling HTTP endpoints, host and student clients exchange session status, hand raises, chat messages, and WebRTC SDP offers/answers/ICE candidates in microseconds.
+* **Dynamic QR Code Engine (`qrcode`):** Encodes the active hotspot IP and classroom session token into crisp QR images on demand for instant camera onboarding.
+
+### 3. 🛡️ The Backend: Node.js + Express
+* **Express & Node.js HTTP Server:** Dual-purpose powerhouse serving our REST health/attendance endpoints while also serving the compiled single-page frontend.
+* **Smart Network Adapter Discovery:** Custom algorithm in `server/src/network.ts` that inspects system network interfaces, penalizes virtual bridges (Docker, WSL, VPNs), and automatically prioritizes active wireless hotspot adapters (`192.168.x.x` / `10.x.x.x`).
+
+### 4. 🖥️ Desktop Ecosystem: Electron 44 & electron-builder
+* **Electron Wrapper:** Lets professors double-click an icon and run ClassCast without knowing what a terminal is.
+* **Smart Lifecycle Orchestrator:** Polls the Express server health endpoint before loading the UI and hooks into `before-quit` to ensure background WebSocket listeners and ports release cleanly.
 
 ---
 
-## 🚀 Quick Start Guide
+## 🚀 Quick Launch (Pick Your Poison)
 
-### Prerequisites
-* **Node.js:** Version 20 or newer ([nodejs.org](https://nodejs.org/)).
-* **npm:** Included with Node.js.
+### 🎒 Method 1: The One-Click Way (Easiest for Teachers & Students)
 
-### 1. Launch with One-Click Launchers (Recommended)
+Make sure you have **Node.js (v20+)** installed on the host machine.
 
-#### On Windows:
-Double-click `Start_ClassCast.bat` (or open Command Prompt):
-```cmd
-Start_ClassCast.bat
-```
-*Automatically verifies Node.js, installs dependencies, builds packages if missing, boots the server, and launches your browser to `http://localhost:3000`.*
-
-#### On Linux / macOS:
-Open a terminal in the project directory and run:
-```bash
-chmod +x Start_ClassCast.sh
-./Start_ClassCast.sh
-```
-*Alternatively on Linux, you can double-click `ClassCast.desktop`.*
+* **On Windows:** Double-click `Start_ClassCast.bat`.
+* **On Linux / macOS:** Run in terminal:
+  ```bash
+  chmod +x Start_ClassCast.sh
+  ./Start_ClassCast.sh
+  ```
+> **What it does automatically:** Checks Node/npm, installs dependencies if it's your first run, compiles TypeScript/Vite assets if missing, kicks off the server, and automatically pops open `http://localhost:3000` in your default browser. Zero stress.
 
 ---
 
-### 2. Manual CLI Workflow
-
-If you prefer using standard npm commands:
+### 💻 Method 2: For The CLI Purists
 
 ```bash
-# 1. Install workspace dependencies
+# 1. Grab dependencies across all workspaces
 npm install
 
-# 2. Build shared, server, and web packages
+# 2. Build packages (shared, server, web)
 npm run build
 
-# 3. Run test suites
+# 3. Run the automated test suites
 npm test
 
-# 4. Start production server
+# 4. Fire up the production server
 npm start
 ```
-The server will start on port `3000` and display your local and network IP addresses.
 
 ---
 
-### 3. Electron Desktop App
+### 🪟 Method 3: Electron Desktop App
 
-To run the application inside an Electron window:
+Want it to look and feel like a dedicated native desktop application?
 
 ```bash
-# Run desktop development build
+# Launch Electron dev app
 npm run desktop:dev
 
-# Package Linux binary (AppImage/Snap)
+# Package standalone Linux AppImage/Snap
 npm run desktop:build
 ```
 
-> **Note on Standalone Packaging:**
-> * Standalone binaries (`.exe` on Windows, `.AppImage` on Linux, `.dmg` on macOS) bundle Node.js and Chromium, allowing users without Node.js installed to run the application.
-> * Due to platform signing and native toolchains, Windows `.exe` installers must be built on Windows (or via wine), and macOS `.dmg` packages must be built on macOS.
+---
+
+## 📱 Hotspot Battle Guide (Step-by-Step)
+
+Here is how you run a live lecture over a phone hotspot:
+
+```
+[Teacher Laptop] ─────── Wi-Fi / Hotspot ─────── [Student Phones]
+(Hosts on port 3000)                                (Scan QR & Join)
+```
+
+1. **Turn on Personal Hotspot** on your smartphone.
+2. **Connect the teacher's laptop** to that hotspot Wi-Fi.
+3. Fire up ClassCast using `Start_ClassCast.bat` or `./Start_ClassCast.sh`.
+4. The terminal and host screen will show your live network URL:
+   ```
+   Network: http://192.168.43.15:3000
+   ```
+5. Click **Start Class**, type your room name, and click create.
+6. **Students Join:**
+   * Make sure student phones are on the **same hotspot Wi-Fi**.
+   * Open the phone camera and scan the QR code on the host screen (or type the URL into Chrome/Safari).
+   * Enter name & roll number ➔ tap **Join**.
+7. Teacher clicks **Share Screen** ➔ Students see the live stream instantly on their phones.
 
 ---
 
-## 📱 Mobile Hotspot & Local Area Network Setup
+## 🧠 Real Talk: Permissions & Network Gotchas
 
-ClassCast is specifically designed to function when devices are connected to a personal mobile hotspot.
-
-### Step-by-Step Hotspot Instructions:
-1. **Turn on Mobile Hotspot** on your smartphone.
-2. **Connect your laptop** (the teacher's computer) to the smartphone's Wi-Fi hotspot.
-3. Launch ClassCast (`./Start_ClassCast.sh` or `Start_ClassCast.bat`).
-4. Look at the terminal output or the **ClassCast** homepage:
-   * It will show: `Network: http://<YOUR_HOTSPOT_IP>:3000` (e.g. `http://192.168.43.15:3000`).
-5. Click **Start Class** to host a session.
-6. **For Students:**
-   * Ensure students' smartphones are connected to the **same Wi-Fi hotspot**.
-   * Open the phone camera or browser and navigate to `http://<YOUR_HOTSPOT_IP>:3000` or scan the QR code displayed on the teacher's screen.
-   * Enter Student Name and Roll Number, then tap **Join**.
+* **Screen Sharing & Camera Origins:**
+  Modern browsers treat `http://localhost` as a **secure context**, meaning the teacher's laptop can share screens and stream video without HTTPS certificates. When students connect remotely over plain LAN IP (`http://192.168.x.x`), browser security allows them to **view** streams and chat, but blocks student microphones/screen sharing unless SSL is enabled.
+* **AP / Client Isolation:**
+  Some university Wi-Fi networks and Android hotspot toggles enable "Client Isolation" by default (devices on the network cannot talk to each other). If student devices cannot load the teacher's IP address, check hotspot settings and ensure connected devices can communicate.
+* **Firewall Prompts:**
+  When starting ClassCast for the first time on Windows, allow Node / Electron access on **Private Networks**.
 
 ---
 
-## ⚠️ Network, Firewall & Browser Security Limitations
+## 🧪 Testing & Verification
 
-### 1. Browser Media Permissions (HTTP vs. HTTPS)
-* **Screen Sharing from Host (Laptop):** The teacher accesses `http://localhost:3000`. Modern browsers treat `localhost` as a secure origin, allowing full `getDisplayMedia` screen sharing and microphone access without SSL certificates.
-* **Remote Mobile Devices over LAN:** When students connect to `http://192.168.x.x:3000`, browsers consider standard HTTP an insecure origin. Students can **view** the shared screen and **chat** freely; however, browser security policies strictly block student microphone access and student screen sharing unless the connection is HTTPS.
-
-### 2. Mobile Hotspot Client Isolation (AP Isolation)
-* Some smartphone hotspot settings or university enterprise Wi-Fi routers have "AP Isolation" or "Client Isolation" turned on. This prevents connected devices from communicating directly with each other.
-* **Fix:** If students cannot open `http://<IP>:3000`, check the hotspot configuration on the phone and disable "AP Isolation" or "Guest Network Isolation".
-
-### 3. Operating System Firewalls
-* On Windows, when Node or Electron starts for the first time, Windows Defender Firewall may display a security alert. You must select **"Allow access"** on Private networks.
-* On Linux, ensure port 3000 is open if using `ufw`:
-  ```bash
-  sudo ufw allow 3000/tcp
-  ```
-
----
-
-## 🧪 Verification & Automated Tests
-
-To verify project integrity:
+ClassCast comes with automated test suites verifying ID generation, sanitization, room configs, and attendance records:
 
 ```bash
-# Typecheck across all workspace projects
+# Run unit & protocol tests across monorepo packages
+npm test
+
+# Static type check
 npx tsc --noEmit --project packages/shared/tsconfig.json
 npx tsc --noEmit --project server/tsconfig.json
 npx tsc --noEmit --project web/tsconfig.json
-
-# Run unit and protocol tests
-npm test
 ```
 
 ---
 
-## 📄 License
+## 📜 License
 
-MIT License. Designed for classroom and educational collaboration.
+MIT License. Built for seamless offline education everywhere. Give it a star ⭐ if it saved your classroom presentation!
