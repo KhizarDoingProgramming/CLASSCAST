@@ -168,5 +168,5 @@ MIT License. Built for seamless offline education everywhere. Give it a star ⭐
 
 ---
 
-Crafted with 💙 by [MUSTAFA](https://mustaffa.vercel.app)
+By [MUSTAFA](https://mustaffa.vercel.app)
 
